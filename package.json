@@ -1,0 +1,11 @@
+{
+  "name": "gp-proto",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "mapbox.js": "^3.1.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "requirejs": "^2.3.5"
+  }
+}
