@@ -1,14 +1,35 @@
 "use strict";
 
-import L from 'mapbox.js';
 import $ from 'jquery';
+import mapboxgl from 'mapbox-gl';
+const turf = require('@turf/turf');
 
-L.mapbox.accessToken = 'pk.eyJ1Ijoia2xuNCIsImEiOiJjaW9sNjZlbWMwMDEwdzVtNmxxYjA2ZGozIn0.BytaphQwtjCVMGEaLlfb3Q';
-let map = L.mapbox.map('map').setView([41.925,45.502], 14);
-let style = L.mapbox.styleLayer('mapbox://styles/kln4/cj7kgebwh00ol2rpq2b8h6udp').addTo(map);
+mapboxgl.accessToken = 'pk.eyJ1Ijoia2xuNCIsImEiOiJjaW9sNjZlbWMwMDEwdzVtNmxxYjA2ZGozIn0.BytaphQwtjCVMGEaLlfb3Q';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/kln4/cj7kgebwh00ol2rpq2b8h6udp',
+    center: [45.502,41.925],
+    zoom: 13
+});
 
-$.getJSON('/static/data/cityboundary.geojson', function(data) {
-    let boundaryLayer = L.mapbox.featureLayer(data).addTo(map);
-    boundaryLayer.setStyle({color: 'red', opacity: 0.5, fillColor: 'grey', fillOpacity: 0.5});
-    
+map.on('load', function () {
+    $.getJSON('/static/data/cityboundary.geojson', function(data) {
+        let boundary = data.features[0];
+        let bounds = turf.bboxPolygon([180, 90, -180, -90]); 
+        map.addSource('boundary-source', {
+            type: 'geojson',
+            data: turf.difference(bounds, boundary)
+        });
+        
+        map.addLayer({
+            "id": "boundary-layer",
+            "source": "boundary-source",
+            "type": "fill",
+            "paint": {
+                "fill-color": "grey",
+                "fill-opacity": 0.5,
+                "fill-outline-color": "red"
+            }
+        });
+    });
 });
