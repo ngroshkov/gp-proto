@@ -13,6 +13,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+
 @app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.

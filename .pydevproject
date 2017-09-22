@@ -58,5 +58,6 @@
 <path>${GOOGLE_APP_ENGINE}/lib/websocket</path>
 <path>${GOOGLE_APP_ENGINE}/lib/yaml-3.10</path>
 <path>${GOOGLE_APP_ENGINE}/lib/yaml/lib</path>
+<path>${PROJECT_LOC}/lib</path>
 </pydev_pathproperty>
 </pydev_project>

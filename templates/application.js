@@ -1,7 +1,7 @@
 "use strict";
 
-var L = require('mapbox.js');
-var $ = require('jquery');
+import L from 'mapbox.js';
+import $ from 'jquery';
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoia2xuNCIsImEiOiJjaW9sNjZlbWMwMDEwdzVtNmxxYjA2ZGozIn0.BytaphQwtjCVMGEaLlfb3Q';
 let map = L.mapbox.map('map').setView([41.925,45.502], 14);
