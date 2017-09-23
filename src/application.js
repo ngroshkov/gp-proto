@@ -5,7 +5,8 @@ const css = require("./style.css");
 const boundaryjson = require('json-loader!./data/cityboundary.geojson');
 
 const mapbox = require('mapbox-gl');
-const turf = require('@turf/turf');
+const turfBboxPolygon = require('@turf/bbox-polygon');
+const turfDifference = require('@turf/difference');
 
 
 mapbox.accessToken = 'pk.eyJ1Ijoia2xuNCIsImEiOiJjaW9sNjZlbWMwMDEwdzVtNmxxYjA2ZGozIn0.BytaphQwtjCVMGEaLlfb3Q';
@@ -17,11 +18,11 @@ var map = new mapbox.Map({
 });
 
 map.on('load', function () {
-    let boundary = boundaryjson.features[0];
-    let bounds = turf.bboxPolygon([180, 90, -180, -90]); 
+    var boundary = boundaryjson.features[0];
+    var bounds = turfBboxPolygon([180, 90, -180, -90]);
     map.addSource('boundary-source', {
         type: 'geojson',
-        data: turf.difference(bounds, boundary)
+        data: turfDifference(bounds, boundary)
     });
         
     map.addLayer({

@@ -5,7 +5,9 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /build
-  static_dir: build
+- url: /js
+  static_dir: build/js
 - url: /.*
   script: main.app
+skip_files:
+- node_modules/
