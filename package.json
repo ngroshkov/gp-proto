@@ -4,6 +4,7 @@
   "dependencies": {
     "@turf/bbox-polygon": "^4.7.3",
     "@turf/difference": "^4.7.4",
+    "mapbox": "^1.0.0-beta9",
     "mapbox-gl": "^0.40.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
