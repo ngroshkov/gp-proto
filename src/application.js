@@ -6,7 +6,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MapboxClient from 'mapbox';
-import ReactMapboxGl, { Layer, GeoJSONLayer } from 'react-mapbox-gl';
+import ReactMapboxGl, { Source, ZoomControl, Layer, GeoJSONLayer } from 'react-mapbox-gl';
 import turfBboxPolygon from '@turf/bbox-polygon';
 import turfDifference from '@turf/difference';
 
@@ -26,17 +26,28 @@ function App() {
 			</div>;
 }
 
-function GpMap(props) {
-	return	<Map
-				style="mapbox://styles/kln4/cj7kgebwh00ol2rpq2b8h6udp"
-	  			center={[45.502,41.925]}
-	  			zoom={[13]}
-	  			containerStyle={{
-							height: "100vh",
-							width: "100vw"
-	  			}}>
-	  			<CityBoundaryLayer/>
-	  		</Map>
+class GpMap extends React.Component {
+  constructor(props) {
+	super(props);
+  }
+	
+  render() {
+	return <Map
+			style="mapbox://styles/kln4/cj7kgebwh00ol2rpq2b8h6udp"
+  			center={[45.476,41.919]}
+  			zoom={[14.2]}
+  			pitch={50}
+  			bearing={20}
+  			containerStyle={{
+						height: "100vh",
+						width: "100vw"
+  			}}>
+  			<CityBoundaryLayer/>
+  			<CastleSource/>
+  			<CastleLayer/>
+  			<ZoomControl position="topLeft"/>
+  		</Map>
+  }
 }
 
 class CityBoundaryLayer extends React.Component {
@@ -69,6 +80,64 @@ class CityBoundaryLayer extends React.Component {
 			"fill-outline-color": "red"
 		}}/>;
   }
+}
+
+class CastleSource extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {data: {"type":"FeatureCollection", "features":[]}};
+  	}
+
+	componentDidMount() {
+  		mapbox.listFeatures('cj8dg26190gvi2wmo8cogzmam', {}, (err, data) => {
+			this.setData(data);
+		});
+  	}
+
+	setData(data) {
+		this.setState({
+		  data: data
+		});
+	}
+
+	render() {
+		return <Source 
+					id="castle-source" 
+					geoJsonSource={{
+  						type: 'geojson',
+  						data: this.state.data
+					}}
+			/>
+	}
+}
+
+class CastleLayer extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+  	render() {
+		return <Layer
+					id="3d-casle"
+					sourceId={'castle-source'}
+		          	layerOptions={{
+		  				'type': 'fill-extrusion',
+		  				'minzoom': 13
+		          	}}
+					paint={{
+						'fill-extrusion-color': '#CC9837',
+			    		'fill-extrusion-height': {
+			                'property': 'height',
+			        		'type': 'identity'
+			    		},
+						'fill-extrusion-base': {
+			        		'property': 'base_height',
+			        		'type': 'identity'
+						},
+						'fill-extrusion-opacity': 0.5
+					}}>
+		       	</Layer>;
+  	}
 }
 
 function Toolbar(props) {
