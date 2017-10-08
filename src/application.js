@@ -15,37 +15,74 @@ const accessToken = "pk.eyJ1Ijoia2xuNCIsImEiOiJjaW9sNjZlbWMwMDEwdzVtNmxxYjA2ZGoz
 const mapbox = new MapboxClient(accessToken);
 const Map = ReactMapboxGl({accessToken: accessToken});
 
-function App() {
-	const style = {
-		backgroundColor: '#D7DADB',
-		height: '100%',
-	} 
-	return <div style={style}>
-				<GpMap/>
-				<Toolbar/>
-			</div>;
+const descriptions = [	
+	{	
+		id: 0,
+		title:"Telavi", 
+		image:"https://upload.wikimedia.org/wikipedia/commons/4/4f/Telavi_-_old_city.jpg",
+		text: "<p>&nbsp;&nbsp;&nbsp;&nbsp;<b>Telavi</b> (Georgian: <span lang='ka'>თელავი</span> [tʰɛlɑvi]) is the main city and administrative center of Georgia&#39;s eastern province of Kakheti. Its population consists of some 19,629 inhabitants (as of the year 2014). The city is located on foot-hills of Tsiv-Gombori Range at 500–800 meters above the sea level.</p> <p>The first archaeological findings from Telavi date back to the Bronze Age. One of the earliest surviving accounts of Telavi is from the 2nd century AD, by Greek geographer Claudius Ptolemaeus, who mentions the name <i>Teleda</i> (a reference to <i>Telavi</i>). Telavi began to transform into a fairly important and large political and administrative center in the 8th century AD. Interesting information on Telavi is provided in the records by an Arab geographer, Al-Muqaddasi of the 10th century, who mentions Telavi along with such important cities of that time's Caucasus as Tbilisi, Shamkhor, Ganja, Shemakha and Shirvan. Speaking about the population of Telavi, Al-Muqaddasi points out that for the most part it consisted of Christians.</p>"
+	},
+	{		
+		id: 1,
+		title:"Dzveli Galavani", 
+		image:"https://lh3.googleusercontent.com/xmQz_8qafqNLbLPfRy7vJjxsrV4Ztw0Art1JQPw_Pz-wjg4plTvmwzLp9DA7k4Rd4JG8QCJ28Mbtng7d9Dfs4RJAsYA48HCDQJNiiYijLor-V5ZHbmGzuRVHTC3oYYQjN7gOvJAblLJ35G65fXLzCjSbiZZEFJLHujWfLjTwhgxeYrE1InxQMWnh56YIshXFhv9C8cM9P_otYHO8DY47rkkWw0DJ5xMVQD7Pt85zFnTx_6oQMXB6VB7ZiVmZvcH7Km2xmh48A0OkpzX2BX7_D2ebbolQ1FiGOrNAanmyTKvQdGWWxZ2ykybVmG5-Ws5JfJ4SV7NhOlpGmUkcYSLdvWF-sUraihL7WntIIJj0zUwf-9F2tNriZYryTZ87cCu3TFqUz35NOA60AaleL-sPJdr7pYHmOng1or5gGrkS5OlOgdeh_LBir8Fa7MNi4sff65tYyX8ZMtM6uJHxfjGmsLmB4nquaVmsamU1VF8taY8gNmxAWYjf0u3Epk-YOugznWp0mxLffeAZN6i-OhVIt72z2mOLjViye8TYJu5fvsEl0JejEopvNzcOz_P5zoBvNFwi8VuGD3-ZmKpm7719Fw8kC8S3igFHfEwSP14YI2dGOcvKTTxlDiK8E6jQ7RyUKqYSsGwXBgmP5px10qC3lNgGngfR6yPPp-0=w1008-h673-no",
+		text: "<p>&nbsp;&nbsp;&nbsp;&nbsp;Dzveli Galavani (old walls) - fortress of the first Kakhetian kings (9th-10th centuries AD).</p>"
+	}
+]
+
+
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			mapProperties: {
+				center:[45.476,41.919],
+	  			zoom:[14.2],
+	  			pitch:50,
+	  			bearing:20
+			},
+			description: descriptions[0]
+		};
+		this.handleClick = (layer) => {
+			let descriptionId = layer == null ? 0 : layer === "castle" ? 1 : 2;
+			this.setState({description:descriptions[descriptionId]})
+		}
+	}
+
+	render() {
+		const style = {
+			backgroundColor: '#D7DADB',
+			height: '100%',
+		} 
+		return <div style={style}>
+					<GpMap 
+						properties={this.state.mapProperties} 
+						description={this.state.description} 
+						onClick={(layer) => this.handleClick(layer)}/>
+					<Toolbar description={this.state.description}/>
+				</div>
+	}
 }
 
 class GpMap extends React.Component {
-  constructor(props) {
-	super(props);
-  }
-	
   render() {
 	return <Map
 			style="mapbox://styles/kln4/cj7kgebwh00ol2rpq2b8h6udp"
-  			center={[45.476,41.919]}
-  			zoom={[14.2]}
-  			pitch={50}
-  			bearing={20}
+  			center={this.props.properties.center}
+  			zoom={this.props.properties.zoom}
+  			pitch={this.props.properties.pitch}
+  			bearing={this.props.properties.bearing}
   			containerStyle={{
 						height: "100vh",
 						width: "100vw"
-  			}}>
-  			<CityBoundaryLayer/>
-  			<CastleSource/>
-  			<CastleLayer/>
-  			<ZoomControl position="topLeft"/>
+  			}}
+  			onClick={() => this.props.onClick(null)}
+  			>
+  				<CityBoundaryLayer/>
+  				<CastleLayer 
+  					selected={this.props.description.id === 1} 
+  					onClick={(layer) => this.props.onClick(layer)}/>
+  				<ZoomControl position="topLeft"/>
   		</Map>
   }
 }
@@ -82,10 +119,19 @@ class CityBoundaryLayer extends React.Component {
   }
 }
 
-class CastleSource extends React.Component {
+class CastleLayer extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {data: {"type":"FeatureCollection", "features":[]}};
+		this.state = {
+			data: {"type":"FeatureCollection", "features":[]},
+			highlighted: false
+		}
+		this.featureMouseEnter = (e) => {
+			this.setState({highlighted:true})
+		}
+		this.featureMouseLeave = (e) => {
+			this.setState({highlighted:false})
+		}
   	}
 
 	componentDidMount() {
@@ -95,36 +141,14 @@ class CastleSource extends React.Component {
   	}
 
 	setData(data) {
-		this.setState({
-		  data: data
-		});
-	}
-
-	render() {
-		return <Source 
-					id="castle-source" 
-					geoJsonSource={{
-  						type: 'geojson',
-  						data: this.state.data
-					}}
-			/>
-	}
-}
-
-class CastleLayer extends React.Component {
-	constructor(props) {
-		super(props);
+		this.setState({data: data});
 	}
 
   	render() {
-		return <Layer
+		return <GeoJSONLayer
 					id="3d-casle"
-					sourceId={'castle-source'}
-		          	layerOptions={{
-		  				'type': 'fill-extrusion',
-		  				'minzoom': 13
-		          	}}
-					paint={{
+					data={this.state.data}
+					fillExtrusionPaint={{
 						'fill-extrusion-color': '#CC9837',
 			    		'fill-extrusion-height': {
 			                'property': 'height',
@@ -134,34 +158,41 @@ class CastleLayer extends React.Component {
 			        		'property': 'base_height',
 			        		'type': 'identity'
 						},
-						'fill-extrusion-opacity': 0.5
-					}}>
-		       	</Layer>;
+						'fill-extrusion-opacity': this.props.selected === true ? 1 : 
+														this.state.highlighted ? 0.8 : 0.5
+					}}
+					fillExtrusionOnMouseEnter={this.featureMouseEnter}
+					fillExtrusionOnMouseLeave={this.featureMouseLeave}
+					fillExtrusionOnClick={() => this.props.onClick("castle")}
+					>
+		       	</GeoJSONLayer>;
   	}
 }
 
-function Toolbar(props) {
-	const style = {
-		position: 'absolute',
-		width: '300px',
-		height: '500px',
-		right: '20px',
-		top: '20px',
-		backgroundColor: 'white',
-		borderRadius: '10px',
-		opacity: '0.9',
-		textAlign: 'center',
-		padding: '15px'
-	};
-	return <div style={style}>
-				<Title/>
-				<Image/>
-				<Text/>
-			</div>;
+class Toolbar extends React.Component {
+	render() {
+		const style = {
+			position: 'absolute',
+			width: '300px',
+			height: '500px',
+			right: '20px',
+			top: '20px',
+			backgroundColor: 'white',
+			borderRadius: '10px',
+			opacity: '0.9',
+			textAlign: 'center',
+			padding: '15px'
+		};
+		return <div style={style}>
+					<Title value = {this.props.description.title}/>
+					<Image value = {this.props.description.image}/>
+					<Text  value = {this.props.description.text}/>
+				</div>;
+	}
 }
 
 function Title(props) {
-	return <div><h2>Telavi</h2></div>;
+	return <div><h2>{props.value}</h2></div>;
 }
 
 function Image(props) {
@@ -169,7 +200,7 @@ function Image(props) {
 		width: '100%',
 		height: '150px'
 	}
-	return <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Telavi_-_old_city.jpg" style={style}/>;
+	return <img src={props.value} style={style}/>;
 }
 
 function Text(props) {
@@ -191,19 +222,9 @@ function Text(props) {
 	}
 	return  <div style={conainerstyle}>
 				<div style={textconainerstyle}>
-					<div style={textstyle}>
-						<p>&nbsp;&nbsp;&nbsp;&nbsp;<b>Telavi</b> (Georgian: <span lang="ka">თელავი</span> [tʰɛlɑvi])
-						is the main city and administrative center of Georgia's eastern province of Kakheti.
-						Its population consists of some 19,629 inhabitants (as of the year 2014). 
-						The city is located on foot-hills of Tsiv-Gombori Range at 500–800 meters above the sea level.</p>
-						<p>The first archaeological findings from Telavi date back to the Bronze Age. 
-						One of the earliest surviving accounts of Telavi is from the 2nd century AD, 
-						by Greek geographer Claudius Ptolemaeus, who mentions the name <i>Teleda</i> (a reference to <i>Telavi</i>). 
-						Telavi began to transform into a fairly important and large political and administrative center 
-						in the 8th century AD. Interesting information on Telavi is provided in the records by an Arab geographer, 
-						Al-Muqaddasi of the 10th century, who mentions Telavi along with such important cities of that time's 
-						Caucasus as Tbilisi, Shamkhor, Ganja, Shemakha and Shirvan. Speaking about the population of Telavi, 
-						Al-Muqaddasi points out that for the most part it consisted of Christians.</p>
+					<div style={textstyle}
+						dangerouslySetInnerHTML={{__html: props.value}}>
+						
 				 	</div>
 				</div>
 			</div>;
@@ -216,6 +237,3 @@ ReactDOM.render(
   <App />,
   document.getElementById('root')
 );
-
-
-
