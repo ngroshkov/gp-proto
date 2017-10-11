@@ -20,13 +20,13 @@ const descriptions = [
 		id: 0,
 		title:"Telavi", 
 		image:"https://upload.wikimedia.org/wikipedia/commons/4/4f/Telavi_-_old_city.jpg",
-		text: "<p>&nbsp;&nbsp;&nbsp;&nbsp;<b>Telavi</b> (Georgian: <span lang='ka'>თელავი</span> [tʰɛlɑvi]) is the main city and administrative center of Georgia&#39;s eastern province of Kakheti. Its population consists of some 19,629 inhabitants (as of the year 2014). The city is located on foot-hills of Tsiv-Gombori Range at 500–800 meters above the sea level.</p> <p>The first archaeological findings from Telavi date back to the Bronze Age. One of the earliest surviving accounts of Telavi is from the 2nd century AD, by Greek geographer Claudius Ptolemaeus, who mentions the name <i>Teleda</i> (a reference to <i>Telavi</i>). Telavi began to transform into a fairly important and large political and administrative center in the 8th century AD. Interesting information on Telavi is provided in the records by an Arab geographer, Al-Muqaddasi of the 10th century, who mentions Telavi along with such important cities of that time's Caucasus as Tbilisi, Shamkhor, Ganja, Shemakha and Shirvan. Speaking about the population of Telavi, Al-Muqaddasi points out that for the most part it consisted of Christians.</p>"
+		text: "<b>Telavi</b> (Georgian: <span lang='ka'>თელავი</span> [tʰɛlɑvi]) is the main city and administrative center of Georgia&#39;s eastern province of Kakheti. Its population consists of some 19,629 inhabitants (as of the year 2014). The city is located on foot-hills of Tsiv-Gombori Range at 500–800 meters above the sea level.<br/>The first archaeological findings from Telavi date back to the Bronze Age. One of the earliest surviving accounts of Telavi is from the 2nd century AD, by Greek geographer Claudius Ptolemaeus, who mentions the name <i>Teleda</i> (a reference to <i>Telavi</i>). Telavi began to transform into a fairly important and large political and administrative center in the 8th century AD. Interesting information on Telavi is provided in the records by an Arab geographer, Al-Muqaddasi of the 10th century, who mentions Telavi along with such important cities of that time's Caucasus as Tbilisi, Shamkhor, Ganja, Shemakha and Shirvan. Speaking about the population of Telavi, Al-Muqaddasi points out that for the most part it consisted of Christians."
 	},
 	{
 		id: 1,
 		title:"Dzveli Galavani", 
 		image:"https://lh3.googleusercontent.com/xmQz_8qafqNLbLPfRy7vJjxsrV4Ztw0Art1JQPw_Pz-wjg4plTvmwzLp9DA7k4Rd4JG8QCJ28Mbtng7d9Dfs4RJAsYA48HCDQJNiiYijLor-V5ZHbmGzuRVHTC3oYYQjN7gOvJAblLJ35G65fXLzCjSbiZZEFJLHujWfLjTwhgxeYrE1InxQMWnh56YIshXFhv9C8cM9P_otYHO8DY47rkkWw0DJ5xMVQD7Pt85zFnTx_6oQMXB6VB7ZiVmZvcH7Km2xmh48A0OkpzX2BX7_D2ebbolQ1FiGOrNAanmyTKvQdGWWxZ2ykybVmG5-Ws5JfJ4SV7NhOlpGmUkcYSLdvWF-sUraihL7WntIIJj0zUwf-9F2tNriZYryTZ87cCu3TFqUz35NOA60AaleL-sPJdr7pYHmOng1or5gGrkS5OlOgdeh_LBir8Fa7MNi4sff65tYyX8ZMtM6uJHxfjGmsLmB4nquaVmsamU1VF8taY8gNmxAWYjf0u3Epk-YOugznWp0mxLffeAZN6i-OhVIt72z2mOLjViye8TYJu5fvsEl0JejEopvNzcOz_P5zoBvNFwi8VuGD3-ZmKpm7719Fw8kC8S3igFHfEwSP14YI2dGOcvKTTxlDiK8E6jQ7RyUKqYSsGwXBgmP5px10qC3lNgGngfR6yPPp-0=w1008-h673-no",
-		text: "<p>&nbsp;&nbsp;&nbsp;&nbsp;Dzveli Galavani (old walls) - fortress of the first Kakhetian kings (9th-10th centuries AD).</p>"
+		text: "Dzveli Galavani (old walls) - fortress of the first Kakhetian kings (9th-10th centuries AD)."
 	},
 	{		
 		id: 2,
@@ -126,8 +126,9 @@ class GpMap extends React.Component {
   			pitch={this.props.properties.pitch}
   			bearing={this.props.properties.bearing}
   			containerStyle={{
-						height: "100vh",
-						width: "100vw"
+  				position: 'absolute',
+    			height: '100%',
+    			width: '100%'
   			}}
   			onClick={() => this.handleBuildingsClick(null)}
   			>
@@ -217,9 +218,9 @@ class Toolbar extends React.Component {
 		const style = {
 			position: 'absolute',
 			width: '300px',
-			height: '500px',
 			right: '20px',
 			top: '20px',
+			bottom: '100px',
 			backgroundColor: 'white',
 			borderRadius: '10px',
 			opacity: '0.9',
@@ -246,30 +247,18 @@ function Image(props) {
 }
 
 function Text(props) {
-		const conainerstyle = {
-		position: 'relative',
-		height: '230px'
+	const style = {
+		position: 'absolute',
+	    top: '290px',
+	    left: '15px',
+	    right: '15px',
+	    bottom: '15px',
+	    overflow: 'auto',
+	    paddingRight: '5px',
+	    textAlign: 'justify'
 	}
-	const textconainerstyle = {
-		height: '100%',
-		overflow: 'hidden',
-		boxSizing: 'border-box',
-		position: 'absolute'
-	}
-	const textstyle = {
-		textAlign: 'justify',
-		position: 'relative',
-		maxHeight: '100%',
-		overflow: 'auto'
-	}
-	return  <div style={conainerstyle}>
-				<div style={textconainerstyle}>
-					<div style={textstyle}
-						dangerouslySetInnerHTML={{__html: props.value}}>
-						
-				 	</div>
-				</div>
-			</div>;
+	return <div style={style}
+				dangerouslySetInnerHTML={{__html: '&nbsp;&nbsp;&nbsp;&nbsp;' + props.value}} />;
 }
 
 
